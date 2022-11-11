@@ -1,0 +1,114 @@
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="style.css">
+  <script src="https://unpkg.com/obniz@3.x/obniz.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+ <!-- <p>
+    HIGH／LOWの入出力Groveデバイスのデモ<br>
+    入力：Grove0、出力：Grove1
+  </p><-->
+  <p>
+    日常用
+  </p>
+    <input type="number">時〜<input>時　メッセージ:<input id="msg1">
+    <br><input>時〜<input>時　メッセージ:<input id="msg2">
+    <br><input>時〜<input>時　メッセージ:<input id="msg3">
+    <br><input>時〜<input>時　メッセージ:<input id="msg4">
+
+    typeno
+  <p>
+    非常用
+  </p>
+  <input id="msg5" type='text'>
+
+ 
+
+<script>
+   
+    const obniz = new Obniz("OBNIZ_ID_HERE");
+    obniz.onconnect = async function() {
+
+      // obnizのディスプレイ
+      obniz.display.clear();
+      obniz.display.print("Digital Grove Demo");
+        
+      // GroveコネクタのVINとGNDの設定
+      obniz.io4.output(true);
+      obniz.io5.output(false);
+       
+      // 処理に必要な変数
+      let p_btnB = false;
+      let stateB = true;
+
+      let p_btnR = false;
+      let stateR = true;
+
+      // 繰り返し
+      obniz.onloop = async function () {
+
+        // 入力（Grove0: io0/io1）
+        // const btn = await obniz.io0.inputWait();
+        const btnB = await obniz.io1.inputWait();
+        const btnR = await obniz.io3.inputWait();
+
+       
+       
+        
+        
+
+        // ボタンの状態が切り替わったとき
+       if (p_btnB !== btnB) {
+          stateB = !btnB;
+          obniz.display.clear();
+          obniz.display.print(stateB);
+
+        // const msg1 = '元気です！';
+          const msg1 = document.getElementById('msg1').value;
+          const url = `https://maker.ifttt.com/trigger/push/with/key/MD3Hg9NTMLvmAuoQ0GAlL?value1=${msg1}`;
+          fetch(url);
+   
+  //  fetch('https://maker.ifttt.com/trigger/push/with/key/MD3Hg9NTMLvmAuoQ0GAlL?value1=元気です！');
+
+
+   
+
+  
+}
+
+
+if (p_btnR !== btnR) {
+          stateR = !btnR;
+          obniz.display.clear();
+          obniz.display.print(stateR);
+
+          const msg5 = document.getElementById('msg5').value;
+          const url = `https://maker.ifttt.com/trigger/push/with/key/MD3Hg9NTMLvmAuoQ0GAlL?value1=${msg5}`;
+          fetch(url); 
+}
+
+        // LED（Grove0: io0/io1）
+        obniz.io0.output(stateB);
+        // obniz.io1.output(state);
+        obniz.io2.output(stateR);
+
+
+        // 更新
+        p_btnB = btnB;
+        p_btnR = btnR;
+        // デバイスによってはちょっと休んだほうがよい
+        await obniz.wait(100); // ミリ秒
+      }
+    };
+
+   
+  </script>
+</body>
+
+
+
+</html>
