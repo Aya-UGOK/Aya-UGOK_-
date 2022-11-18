@@ -1,0 +1,20 @@
+input[type="text"] {
+  width: 80vw;
+}
+
+input[type="number"] {
+  width: 3em;
+}
+
+section {
+  border: solid 1px brown;
+  padding: 0 1em;
+  margin: 1em 0;
+  background-color: antiquewhite;
+}
+
+button {
+  font-size: 24px;
+  padding: 0.5em 1em;
+  background-color: azure;
+}
