@@ -18,25 +18,34 @@
 
       <h3>時間指定</h3>
       <p>
-        <input type="number" id="ns1" />時〜<input
+        <input type="number" id="nhs1" />：<input
           type="number"
-          id="ne1"
-        />時<br />
-        メッセージ: <input type="text" id="msg_n1" />
+          id="nms1"
+        />〜<input type="number" id="nhe1" />：<input
+          type="number"
+          id="nme1"
+        /><br />
+        メッセージ： <input type="text" id="msg_n1" />
       </p>
       <p>
-        <input type="number" id="ns2" />時〜<input
+        <input type="number" id="nhs2" />：<input
           type="number"
-          id="ne2"
-        />時<br />
-        メッセージ: <input type="text" id="msg_n2" />
+          id="nms2"
+        />〜<input type="number" id="nhe2" />：<input
+          type="number"
+          id="nme2"
+        /><br />
+        メッセージ： <input type="text" id="msg_n2" />
       </p>
       <p>
-        <input type="number" id="ns3" />時〜<input
+        <input type="number" id="nhs3" />：<input
           type="number"
-          id="ne3"
-        />時<br />
-        メッセージ: <input type="text" id="msg_n3" />
+          id="nms3"
+        />〜<input type="number" id="nhe3" />：<input
+          type="number"
+          id="nme3"
+        /><br />
+        メッセージ： <input type="text" id="msg_n3" />
       </p>
     </section>
 
@@ -47,25 +56,34 @@
 
       <h3>時間指定</h3>
       <p>
-        <input type="number" id="es1" />時〜<input
+        <input type="number" id="ehs1" />：<input
           type="number"
-          id="ee1"
-        />時<br />
-        メッセージ: <input type="text" id="msg_e1" />
+          id="ems1"
+        />〜<input type="number" id="ehe1" />：<input
+          type="number"
+          id="eme1"
+        /><br />
+        メッセージ： <input type="text" id="msg_e1" />
       </p>
       <p>
-        <input type="number" id="es2" />時〜<input
+        <input type="number" id="ehs2" />：<input
           type="number"
-          id="ee2"
-        />時<br />
-        メッセージ: <input type="text" id="msg_e2" />
+          id="ems2"
+        />〜<input type="number" id="ehe2" />：<input
+          type="number"
+          id="eme2"
+        /><br />
+        メッセージ： <input type="text" id="msg_e2" />
       </p>
       <p>
-        <input type="number" id="es3" />時〜<input
+        <input type="number" id="ehs3" />：<input
           type="number"
-          id="ee3"
-        />時<br />
-        メッセージ: <input type="text" id="msg_e3" />
+          id="ems3"
+        />〜<input type="number" id="ehe3" />：<input
+          type="number"
+          id="eme3"
+        /><br />
+        メッセージ： <input type="text" id="msg_e3" />
       </p>
     </section>
 
@@ -76,14 +94,29 @@
       const ifttt_id = "MD3Hg9NTMLvmAuoQ0GAlL";
       const url = `https://maker.ifttt.com/trigger/push/with/key/${ifttt_id}?value1=`;
 
-      const msg_n = [];
-      const msg_e = [];
-      const time_n = [];
-      const time_e = [];
+      // n: normal、e: emargency
+      const msg = { n: [], e: [] };
+      // xs: start, xe: end
+      const time = { ns: [], ne: [], es: [], ee: [] };
 
       // テスト用に最初から入力しておく（最終的にはローカルストレージへ）
       document.getElementById("msg_n0").value = "元気です";
       document.getElementById("msg_e0").value = "しんどいです";
+      document.getElementById("msg_n1").value = "薬を飲みました";
+      document.getElementById("nhs1").value = "10";
+      document.getElementById("nms1").value = "30";
+      document.getElementById("nhe1").value = "11";
+      document.getElementById("nme1").value = "20";
+      document.getElementById("msg_n2").value = "おやつを食べました";
+      document.getElementById("nhs2").value = "14";
+      document.getElementById("nms2").value = "50";
+      document.getElementById("nhe2").value = "15";
+      document.getElementById("nme2").value = "30";
+      document.getElementById("msg_e1").value = "眠れません";
+      document.getElementById("ehs1").value = "12";
+      document.getElementById("ems1").value = "00";
+      document.getElementById("ehe1").value = "14";
+      document.getElementById("eme1").value = "00";
 
       obniz.onconnect = async function () {
         // obnizのディスプレイ
@@ -107,14 +140,23 @@
 
         // データ取得
         for (let i = 0; i < 4; i += 1) {
-          msg_n[i] = document.getElementById("msg_n" + i).value;
-          msg_e[i] = document.getElementById("msg_e" + i).value;
+          msg.n[i] = document.getElementById("msg_n" + i).value;
+          msg.e[i] = document.getElementById("msg_e" + i).value;
         }
-        for (let i = 1; i < 4; i += 1) {
-          time_n[i] = document.getElementById("ns" + i).value;
-          time_n[i + 3] = document.getElementById("ne" + i).value;
-          time_e[i] = document.getElementById("es" + i).value;
-          time_e[i + 3] = document.getElementById("ee" + i).value;
+        const today = new Date();
+        for (let o of ["n", "e"]) {
+          for (let t of ["s", "e"]) {
+            for (let i = 1; i < 4; i += 1) {
+              let h = parseInt(document.getElementById(o + "h" + t + i).value);
+              let m = parseInt(document.getElementById(o + "m" + t + i).value);
+              if (isNaN(h)) continue; // 時間が設定されていない
+              if (isNaN(m)) m = 0; // 分が設定されていない→０分にする
+              const date = new Date(today.getTime());
+              date.setHours(h);
+              date.setMinutes(m);
+              time[o + t][i] = date.getTime();
+            }
+          }
         }
 
         let p_btnB = false;
@@ -122,37 +164,54 @@
         let p_btnR = false;
         let stateR = true;
 
-        obniz.loop = async function () {
-          const btnB = await obniz.io1.inputWait();
-          const btnR = await obniz.io3.inputWait();
+        // obniz.loop = async function () {
+        //   const btnB = await obniz.io1.inputWait();
+        //   const btnR = await obniz.io3.inputWait();
+        const btnB = true;
+        const btnR = false;
+        const now = new Date().getTime();
 
-          if (p_btnB !== btnB) {
-            stateB = !btnB;
-            obniz.display.clear();
-            obniz.display.print(stateB);
+        // 日常ボタン
+        if (p_btnB !== btnB) {
+          stateB = !btnB;
+          // obniz.display.clear();
+          // obniz.display.print(stateB);
 
-            let msg = msg_n[0];
-            fetch(url + msg);
-
-            // LED（Grove0: io0/io1）
-            obniz.io0.output(stateB);
+          let message = msg.n[0];
+          for (let i = 1; i < 4; i += 1) {
+            if (time.ns[i] < now && now < time.ne[i]) {
+              message = msg.n[i];
+            }
           }
+          console.log(message);
+          fetch(url + message);
 
-          if (p_btnR !== btnR) {
-            stateR = !btnR;
-            obniz.display.clear();
-            obniz.display.print(stateR);
+          // LED（Grove0: io0/io1）
+          // obniz.io0.output(stateB);
+        }
 
-            let msg = msg_e[0];
-            fetch(url + msg);
+        // 非常時ボタン
+        if (p_btnR !== btnR) {
+          stateR = !btnR;
+          // obniz.display.clear();
+          // obniz.display.print(stateR);
 
-            // LED（Grove0: io2/io3）
-            obniz.io2.output(stateR);
+          let message = msg.e[0];
+          for (let i = 1; i < 4; i += 1) {
+            if (time.es < now && now < time.ee) {
+              message = msg.e[i];
+            }
           }
+          console.log(message);
+          fetch(url + message);
 
-          // デバイスによってはちょっと休んだほうがよい
-          await obniz.wait(100); // ミリ秒
-        };
+          // LED（Grove0: io2/io3）
+          // obniz.io2.output(stateR);
+        }
+
+        // デバイスによってはちょっと休んだほうがよい
+        // await obniz.wait(100); // ミリ秒
+        // };
       }
     </script>
   </body>
