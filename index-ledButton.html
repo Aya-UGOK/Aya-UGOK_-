@@ -164,7 +164,8 @@
         let p_btnR = false;
         let stateR = true;
 
-        obniz.loop = async function () {
+        //loop → onloop
+        obniz.onloop = async function () {
           const btnB = await obniz.io1.inputWait();
           const btnR = await obniz.io3.inputWait();
           // const btnB = true;
@@ -198,7 +199,7 @@
 
             let message = msg.e[0];
             for (let i = 1; i < 4; i += 1) {
-              if (time.es < now && now < time.ee) {
+              if (time.es[i] < now && now < time.ee[i]) {
                 message = msg.e[i];
               }
             }
@@ -208,7 +209,10 @@
             // LED（Grove0: io2/io3）
             obniz.io2.output(stateR);
           }
-
+          
+          // 更新
+          p_btnB = btnB;
+          p_btnR = btnR;
           // デバイスによってはちょっと休んだほうがよい
           await obniz.wait(100); // ミリ秒
         };
