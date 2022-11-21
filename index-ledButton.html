@@ -164,54 +164,54 @@
         let p_btnR = false;
         let stateR = true;
 
-        // obniz.loop = async function () {
-        //   const btnB = await obniz.io1.inputWait();
-        //   const btnR = await obniz.io3.inputWait();
-        const btnB = true;
-        const btnR = false;
-        const now = new Date().getTime();
+        obniz.loop = async function () {
+          const btnB = await obniz.io1.inputWait();
+          const btnR = await obniz.io3.inputWait();
+          // const btnB = true;
+          // const btnR = false;
+          const now = new Date().getTime();
 
-        // 日常ボタン
-        if (p_btnB !== btnB) {
-          stateB = !btnB;
-          // obniz.display.clear();
-          // obniz.display.print(stateB);
+          // 日常ボタン
+          if (p_btnB !== btnB) {
+            stateB = !btnB;
+            obniz.display.clear();
+            obniz.display.print(stateB);
 
-          let message = msg.n[0];
-          for (let i = 1; i < 4; i += 1) {
-            if (time.ns[i] < now && now < time.ne[i]) {
-              message = msg.n[i];
+            let message = msg.n[0];
+            for (let i = 1; i < 4; i += 1) {
+              if (time.ns[i] < now && now < time.ne[i]) {
+                message = msg.n[i];
+              }
             }
+            console.log(message);
+            fetch(url + message);
+
+            // LED（Grove0: io0/io1）
+            obniz.io0.output(stateB);
           }
-          console.log(message);
-          fetch(url + message);
 
-          // LED（Grove0: io0/io1）
-          // obniz.io0.output(stateB);
-        }
+          // 非常時ボタン
+          if (p_btnR !== btnR) {
+            stateR = !btnR;
+            obniz.display.clear();
+            obniz.display.print(stateR);
 
-        // 非常時ボタン
-        if (p_btnR !== btnR) {
-          stateR = !btnR;
-          // obniz.display.clear();
-          // obniz.display.print(stateR);
-
-          let message = msg.e[0];
-          for (let i = 1; i < 4; i += 1) {
-            if (time.es < now && now < time.ee) {
-              message = msg.e[i];
+            let message = msg.e[0];
+            for (let i = 1; i < 4; i += 1) {
+              if (time.es < now && now < time.ee) {
+                message = msg.e[i];
+              }
             }
+            console.log(message);
+            fetch(url + message);
+
+            // LED（Grove0: io2/io3）
+            obniz.io2.output(stateR);
           }
-          console.log(message);
-          fetch(url + message);
 
-          // LED（Grove0: io2/io3）
-          // obniz.io2.output(stateR);
-        }
-
-        // デバイスによってはちょっと休んだほうがよい
-        // await obniz.wait(100); // ミリ秒
-        // };
+          // デバイスによってはちょっと休んだほうがよい
+          await obniz.wait(100); // ミリ秒
+        };
       }
     </script>
   </body>
